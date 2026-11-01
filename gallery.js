@@ -17,7 +17,7 @@ const galleryCGs = [
         src: PORTRAIT,
         title: "zjk · 走廊",
         note: "周一早晨，他说「对我来说挺早的」",
-        expr: UPLOADED_SMILE_PORTRAIT,         /* 触碰时的临时表情层 */
+        expr: "imagines/zjk_smile.png",       /* 触碰时的临时表情层 */
         box: { x0: 30, y0: 7, x1: 83, y1: 100 },   /* 人物在图中的包围盒（%） */
         parts: {
             head:  { x: 55, y: 8 },
