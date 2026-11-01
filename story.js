@@ -9,13 +9,14 @@
 ========================================= */
 
 const PORTRAIT = "imagines/zjk.png";
+const UPLOADED_SMILE_PORTRAIT = "imagines/" + encodeURIComponent("以第一张图为基础_同一位穿白色蓝条纹校服polo衫_黑色长裤_2026-11-01T04-52-16.png");
 
 const maleLead = {
     name: "zjk",
     affection: 0,
     expressions: {
         normal: PORTRAIT,
-        smile: "imagines/zjk_smile.png",   /* 好感增加时的笑容表情（第三版） */
+        smile: UPLOADED_SMILE_PORTRAIT,     /* 使用本次上传的原图 */
         sad: PORTRAIT,
         angry: PORTRAIT
     }

@@ -349,6 +349,12 @@ select {
 <script>
 const $ = id => document.getElementById(id);
 
+const uploadedSmilePortrait = "imagines/" + encodeURIComponent("以第一张图为基础_同一位穿白色蓝条纹校服polo衫_黑色长裤_2026-11-01T04-52-16.png");
+const uploadedSmileOption = document.createElement("option");
+uploadedSmileOption.value = uploadedSmilePortrait;
+uploadedSmileOption.textContent = "本次上传的原图";
+$("charSrc").append(uploadedSmileOption);
+
 const controls = ["charH", "charW", "charB", "boxB", "boxH", "boxW", "boxO", "font"];
 
 const presets = {
