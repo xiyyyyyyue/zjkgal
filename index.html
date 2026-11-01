@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="gQQHe0BliWJ51Dhv66xzaN"><head data-page-node-id="R5lTscmcdT7ikUXncAaMgT">
+<meta charset="UTF-8" data-page-node-id="MyzpSN5CrsAWoFpPqZppEr">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="KTdaQb82FvwUhA8M8RCp4s">
+<title data-page-node-id="IvooJZUCC3KDuBpAphpBpw">阿八日日进步中~ - zjk</title>
+
+<style data-page-node-id="pRGeoY4ku5WqFiGhZNNNxd">
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;   /* 移动端浏览器地址栏收起时也铺满，不支持则回退 100vh */
+    overflow: hidden;
+    background: #15151d;
+    color: white;
+    font-family: "Microsoft YaHei", sans-serif;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* 隐藏任意界面 */
+.layer-hide {
+    display: none !important;
+}
+
+#game {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #242b3d;
+}
+
+/* =========================================================
+   开始界面：galgame 标题画面（蓝色系 · 恋爱风）
+   布局：左侧标题 + 竖排菜单，右侧角色主视觉
+========================================================= */
+#start-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 0 6% 0 8%;
+    background:
+        radial-gradient(85% 65% at 18% 8%, rgba(150,200,255,.22), transparent 62%),
+        radial-gradient(70% 60% at 88% 82%, rgba(255,190,225,.18), transparent 65%),
+        linear-gradient(165deg, #2d4d80 0%, #1c3160 45%, #101a33 100%);
+}
+
+/* 柔光光斑 */
+.start-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(46px);
+    opacity: .5;
+    pointer-events: none;
+    animation: startFloat 14s ease-in-out infinite;
+}
+
+.start-glow.a { width: 360px; height: 360px; left: 4%;  top: 4%;   background: rgba(130,190,255,.45); }
+.start-glow.b { width: 280px; height: 280px; right: 9%; bottom: 10%; background: rgba(255,190,225,.40); animation-delay: -6s; }
+.start-glow.c { width: 220px; height: 220px; left: 44%;  bottom: 2%;  background: rgba(170,215,255,.32); animation-delay: -3s; }
+
+@keyframes startFloat {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50%      { transform: translate3d(0, -26px, 0) scale(1.08); }
+}
+
+/* 漂浮光点（恋爱的氛围） */
+.start-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* 上浮的小爱心 / 小星星 */
+.start-particles i {
+    position: absolute;
+    bottom: -34px;
+    font-size: 16px;
+    line-height: 1;
+    font-style: normal;
+    color: #ffc3dd;
+    text-shadow: 0 0 10px rgba(255,255,255,.9);
+    animation: startDrift linear infinite;
+}
+
+.start-particles i::before { content: "♥"; }
+
+.start-particles i:nth-child(even)::before {
+    content: "✦";
+    color: #fff8dc;
+    text-shadow: 0 0 12px rgba(255,228,150,.95);
+}
+
+@keyframes startDrift {
+    0%   { transform: translate(0, 0) scale(.5) rotate(0deg); opacity: 0; }
+    15%  { opacity: .95; }
+    100% { transform: translate(34px, -115vh) scale(1.15) rotate(28deg); opacity: 0; }
+}
+
+.start-particles i:nth-child(1)  { left: 8%;  animation-duration: 15s; animation-delay: -2s;  }
+.start-particles i:nth-child(2)  { left: 16%; animation-duration: 20s; animation-delay: -9s;  font-size: 12px; }
+.start-particles i:nth-child(3)  { left: 25%; animation-duration: 12s; animation-delay: -5s;  font-size: 19px; }
+.start-particles i:nth-child(4)  { left: 34%; animation-duration: 23s; animation-delay: -14s; font-size: 13px; }
+.start-particles i:nth-child(5)  { left: 43%; animation-duration: 17s; animation-delay: -7s;  }
+.start-particles i:nth-child(6)  { left: 52%; animation-duration: 14s; animation-delay: -11s; font-size: 12px; }
+.start-particles i:nth-child(7)  { left: 61%; animation-duration: 21s; animation-delay: -3s;  font-size: 18px; }
+.start-particles i:nth-child(8)  { left: 70%; animation-duration: 18s; animation-delay: -16s; font-size: 13px; }
+.start-particles i:nth-child(9)  { left: 79%; animation-duration: 13s; animation-delay: -6s;  }
+.start-particles i:nth-child(10) { left: 88%; animation-duration: 19s; animation-delay: -12s; font-size: 12px; }
+.start-particles i:nth-child(11) { left: 94%; animation-duration: 16s; animation-delay: -1s;  font-size: 17px; }
+.start-particles i:nth-child(12) { left: 47%; animation-duration: 25s; animation-delay: -20s; font-size: 11px; }
+
+/* 右侧回忆照片墙（真实照片抠图 + 拍立得卡片） */
+.start-photos {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 58%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    /* 整组略微上抬，避免挥臂/橙衣/哭泣三张被屏幕底边切到 */
+    transform: translateY(-5%);
+}
+
+/* 人像贴纸：无边框，直接堆叠错落摆放 */
+.photo-card {
+    position: absolute;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transform: rotate(var(--r, 0deg));
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .35s ease;
+}
+
+/* 白色贴纸描边 + 柔和投影，让人物从蓝色背景里“立”出来
+   漂浮动画放在 img 上，与卡片的 hover 摆正/放大互不打架 */
+.photo-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter:
+        drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff)
+        drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+        drop-shadow(0 10px 18px rgba(28,80,150,.30));
+    animation: floatA 5.5s ease-in-out infinite;
+    transition: filter .35s ease;
+}
+
+/* 三种独立漂浮节奏：上下浮 / 左右摇 / 呼吸缩放 */
+@keyframes floatA {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-13px); }
+}
+@keyframes floatB {
+    0%, 100% { transform: translate(0, 0) rotate(-1.2deg); }
+    50%      { transform: translate(9px, -8px) rotate(1.2deg); }
+}
+@keyframes floatC {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.05); }
+}
+
+/* hover 特效：摆正 + 放大 + 跳到最前 + 描边发光；其他贴纸自动变暗 */
+.start-photos:hover .photo-card { opacity: .5; }
+.start-photos:hover .photo-card:hover {
+    opacity: 1;
+    transform: rotate(0deg) scale(1.12) translateY(-6px);
+    z-index: 30 !important;
+}
+.start-photos:hover .photo-card:hover img {
+    animation-play-state: paused;
+    filter:
+        drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff)
+        drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+        drop-shadow(0 16px 30px rgba(15,50,110,.55))
+        drop-shadow(0 0 22px rgba(140,200,255,.65));
+}
+
+/* 悬停时弹出的回忆小标签 */
+.photo-card::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translate(-50%, 6px) scale(.85);
+    padding: 5px 13px;
+    border-radius: 999px;
+    white-space: nowrap;
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    color: #17497f;
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 5px 14px rgba(5,20,50,.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: .3s cubic-bezier(.34,1.56,.64,1);
+}
+
+.photo-card:hover::after {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+}
+
+/* 合影现已抠图去背景，使用与其他贴纸一致的白色贴纸描边（见上方 .photo-card img） */
+
+/* 按参考图 1:1 排布 v2（坐标由模板匹配逐张精确测得，容器 = 右侧 58% 屏宽）
+   贴纸的倾斜角已"烤"在素材里，CSS 不再额外旋转（合影除外）
+   层叠顺序：合影 < C位 < 格子衫 < 玩偶 < 挥臂 < 橙外套 < 哭泣 */
+.photo-card.st-uniform { --r:4.5deg; top:34.2%; left:47.1%;  width:45.1%; z-index:1; }
+.photo-card.st-zjk     { --r:0deg;   top:18.5%; left:23.3%;  width:38.0%; z-index:2; }
+.photo-card.st-plaid   { --r:0deg;   top:6.9%;  left:60.1%;  width:37.4%; z-index:3; }
+.photo-card.st-doll    { --r:0deg;   top:16.8%; left:-4.8%; width:37.8%; z-index:4; }
+.photo-card.st-swing   { --r:0deg;   top:53.7%; left:-12.3%; width:54.9%; z-index:5; }
+.photo-card.st-orange  { --r:0deg;   top:70.7%; left:36.4%; width:32.6%; z-index:6; }
+.photo-card.st-cry     { --r:0deg;   top:51.0%; left:67.0%;  width:22.7%; z-index:7; }
+
+/* 每张动画类型与节奏各不相同 */
+.photo-card.st-doll    img { animation: floatC 4.5s ease-in-out -2.6s infinite; }
+.photo-card.st-zjk     img { animation: floatC 6s ease-in-out -.4s infinite; }
+.photo-card.st-plaid   img { animation: floatA 5s ease-in-out -1s infinite; }
+.photo-card.st-uniform img { animation: floatB 6.5s ease-in-out -2s infinite; }
+.photo-card.st-orange  img { animation: floatA 6s ease-in-out -3.5s infinite; }
+.photo-card.st-swing   img { animation: floatB 5.5s ease-in-out -.8s infinite; }
+.photo-card.st-cry     img { animation: floatA 6.5s ease-in-out -1.6s infinite; }
+
+/* 哭泣男孩：自带白色撕碎纹理，不加白色描边（与合影贴纸严丝合缝） */
+.photo-card.st-cry img {
+    filter: drop-shadow(0 8px 16px rgba(10,30,70,.30));
+}
+.start-photos:hover .photo-card.st-cry:hover img {
+    filter: drop-shadow(0 14px 26px rgba(10,30,70,.5));
+}
+
+/* C 位：全身校服立绘，白描边略粗 */
+.photo-card.st-zjk img {
+    filter:
+        drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff)
+        drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)
+        drop-shadow(0 14px 24px rgba(28,80,150,.35));
+}
+
+/* 标题文字块 */
+.start-panel {
+    position: relative;
+    z-index: 35;
+    width: 540px;
+    max-width: 100%;
+}
+
+.start-kicker {
+    font-size: 12px;
+    letter-spacing: 6px;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow:
+        0 1px 4px rgba(8,20,50,.95),
+        0 0 14px rgba(255,170,205,.55);
+    margin-bottom: 16px;
+}
+
+#start-screen h1 {
+    font-family: "SimSun", "宋体", "Songti SC", "STSong", Georgia, serif;
+    font-size: 52px;
+    font-weight: 600;   /* 宋体没有真正的粗体，600 比 700 笔画更干净 */
+    letter-spacing: 6px;
+    text-indent: 6px;
+    line-height: 1.25;
+    white-space: nowrap;
+    color: #ffffff;
+    text-shadow:
+        0 3px 0 rgba(120,185,255,.75),
+        0 6px 18px rgba(5,15,45,.6),
+        0 0 30px rgba(150,205,255,.55);
+}
+
+/* 标题末尾的波浪号：稍微俏皮一点 */
+.title-tilde {
+    display: inline-block;
+    margin-left: 4px;
+    font-weight: 400;
+    transform: translateY(-.16em) rotate(9deg);
+}
+
+.start-sub-rule {
+    width: 280px;
+    height: 2px;
+    margin: 20px 0 14px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(255,255,255,0));
+}
+
+#start-screen p {
+    color: #dceaff;
+    letter-spacing: 5px;
+    font-size: 14px;
+    text-shadow: 0 2px 10px rgba(5,15,40,.6);
+}
+
+/* 菜单：galgame 竖排按钮 */
+.start-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 42px;
+    width: 312px;
+}
+
+/* 可爱风：果冻感玻璃胶囊按钮 + 会跳动的小爱心 */
+.start-menu-btn {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    text-align: left;
+    color: #17497f;
+    background: linear-gradient(180deg, #ffffff 0%, #eaf5ff 100%);
+    border: 2px solid #ffffff;
+    box-shadow:
+        0 5px 0 rgba(70,125,205,.75),
+        0 10px 22px rgba(5,20,50,.35);
+    transition: .25s cubic-bezier(.34,1.56,.64,1);
+}
+
+.start-menu-btn::before {
+    content: "♥";
+    font-size: 13px;
+    color: #ff87b6;
+    transform: scale(.9);
+    transition: .25s cubic-bezier(.34,1.56,.64,1);
+}
+
+.start-menu-btn .en {
+    width: 74px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #6aa6e8;
+    transition: .25s ease;
+}
+
+.start-menu-btn .cn {
+    font-size: 15px;
+    letter-spacing: 4px;
+    font-weight: 700;
+    transition: .25s ease;
+}
+
+/* hover 掠光 */
+.start-menu-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,180,210,.45), transparent);
+    transform: translateX(-120%);
+    transition: transform .6s ease;
+}
+
+.start-menu-btn:hover {
+    background: linear-gradient(180deg, #ffffff 0%, #ffeef5 100%);
+    border-color: #ffd3e3;
+    box-shadow:
+        0 7px 0 rgba(255,160,195,.55),
+        0 14px 26px rgba(5,20,50,.45);
+    transform: translateY(-4px) scale(1.04);
+}
+
+.start-menu-btn:hover::after { transform: translateX(120%); }
+.start-menu-btn:hover .en { color: #ff87b6; }
+.start-menu-btn:hover::before {
+    animation: heartBeat .7s ease-in-out infinite;
+}
+
+/* 果冻按压 */
+.start-menu-btn:active {
+    transform: translateY(2px) scale(.97);
+    box-shadow:
+        0 2px 0 rgba(255,160,195,.55),
+        0 6px 12px rgba(40,100,170,.18);
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    25%      { transform: scale(1.45); }
+    45%      { transform: scale(1.05); }
+    65%      { transform: scale(1.3); }
+}
+
+.start-copy {
+    margin-top: 30px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #b9d3f2;
+    opacity: .9;
+    text-shadow: 0 2px 6px rgba(5,15,40,.6);
+}
+
+/* BGM 音乐开关（全局右下角） */
+#bgm-toggle {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 60;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.75);
+    background: rgba(255,255,255,.14);
+    backdrop-filter: blur(6px);
+    color: #ffffff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    text-shadow: 0 0 10px rgba(150,205,255,.9);
+    box-shadow: 0 4px 14px rgba(5,20,50,.35);
+    transition: .25s ease;
+    overflow: hidden;
+}
+
+/* 播放中：音符轻轻摇摆 */
+#bgm-toggle:not(.muted) {
+    animation: noteSwing 2.4s ease-in-out infinite;
+}
+
+#bgm-toggle:hover {
+    background: rgba(255,255,255,.28);
+    transform: scale(1.08);
+}
+
+/* 静音态：变暗 + 斜杠 */
+#bgm-toggle.muted {
+    color: rgba(255,255,255,.45);
+    border-color: rgba(255,255,255,.3);
+    text-shadow: none;
+    animation: none;
+}
+
+#bgm-toggle.muted::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 30px;
+    height: 2.5px;
+    border-radius: 2px;
+    background: rgba(255,150,180,.95);
+    transform: translate(-50%, -50%) rotate(-45deg);
+    box-shadow: 0 0 8px rgba(255,150,180,.7);
+}
+
+@keyframes noteSwing {
+    0%, 100% { transform: rotate(-8deg); }
+    50%      { transform: rotate(8deg); }
+}
+
+/* 结局界面沿用按钮（保持简洁） */
+.start-btn {
+    padding: 14px 65px;
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255,255,255,.7);
+    font-size: 16px;
+    letter-spacing: 4px;
+    transition: .3s;
+}
+
+.start-btn:hover {
+    background: white;
+    color: #202438;
+}
+
+/* 背景：底层渐变兜底 + 上层图片淡入，两层都强制铺满容器 */
+#background {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #596c83, #252a3c);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+/* 图片层：预加载成功后淡入，失败则保持渐变 */
+#bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity .6s ease;
+}
+
+/* 统一压暗 + 底部暗角：保证任何背景图下文字都清晰 */
+#background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(transparent 35%, rgba(10,10,20,.65) 100%),
+        rgba(8,10,18,.18);
+}
+
+/* zjk 立绘 */
+#character {
+    position: absolute;
+    bottom: -84%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 177%;
+    width: 192%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 1;
+}
+
+/* 图片强制撑满容器：max-width/max-height 只会缩小不会放大，
+   会导致图片按原始像素渲染、随容器下移掉出屏幕 */
+#character img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    /* 调色融入背景：降低饱和与亮度，与背景暗角协调 */
+    filter: saturate(.86) brightness(.95) contrast(.97) drop-shadow(0 0 15px rgba(0,0,0,.25));
+}
+
+#character-placeholder {
+    font-size: 130px;
+    opacity: .75;
+}
+
+/* 好感增加时的上下跳动 */
+@keyframes charBounce {
+    0%   { transform: translateY(0); }
+    18%  { transform: translateY(-22px); }
+    36%  { transform: translateY(0); }
+    54%  { transform: translateY(-12px); }
+    72%  { transform: translateY(0); }
+    86%  { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+}
+
+#character-img.char-bounce {
+    animation: charBounce .95s cubic-bezier(.28,.84,.42,1) 2;
+}
+
+/* 对话框 */
+#dialogue-box {
+    position: absolute;
+    bottom: 2.5%;
+    left: 5%;
+    width: 90%;
+    height: 25%;
+    z-index: 3;
+    background: rgba(15,19,32,.88);
+    border: 1px solid rgba(255,255,255,.25);
+    backdrop-filter: blur(12px);
+    padding: 25px 35px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#speaker {
+    font-size: 20px;
+    color: #c5d9f0;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+#dialogue {
+    font-size: 17px;
+    line-height: 2;
+    color: #f2f2f5;
+}
+
+#next-tip {
+    position: absolute;
+    bottom: 15px;
+    right: 25px;
+    color: #aab5c7;
+    font-size: 12px;
+    animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: .2; }
+}
+
+/* 选项 */
+#choices {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    top: 48%;
+    transform: translate(-50%,-50%);
+    width: 65%;
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.choice-btn {
+    background: rgba(20,25,42,.92);
+    border: 1px solid rgba(210,225,255,.5);
+    color: white;
+    padding: 18px;
+    font-size: 16px;
+    transition: .25s;
+}
+
+.choice-btn:hover {
+    background: rgba(125,150,190,.85);
+    transform: scale(1.02);
+}
+
+/* 游戏内菜单 */
+#menu {
+    position: absolute;
+    z-index: 6;
+    top: 20px;
+    right: 25px;
+    display: flex;
+    gap: 10px;
+}
+
+.menu-btn {
+    padding: 8px 16px;
+    color: white;
+    background: rgba(20,25,40,.6);
+    border: 1px solid rgba(255,255,255,.35);
+    font-size: 13px;
+    letter-spacing: 2px;
+    transition: .25s;
+}
+
+.menu-btn:hover {
+    background: rgba(125,150,190,.85);
+}
+
+/* 好感度 */
+#affection-panel {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    z-index: 6;
+    font-size: 14px;
+    color: #f2d8e1;
+}
+
+#affection-bar {
+    margin-top: 8px;
+    width: 150px;
+    height: 5px;
+    background: rgba(255,255,255,.2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#affection-fill {
+    height: 100%;
+    width: 0%;
+    background: #e8a4ba;
+    transition: width .5s;
+}
+
+/* 结局 */
+#ending-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    background: rgba(10,12,25,.96);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+#ending-screen h1 {
+    font-size: 38px;
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+
+#ending-screen p {
+    color: #c9cbd5;
+    line-height: 2;
+    max-width: 600px;
+    margin-bottom: 30px;
+}
+
+/* 主界面 */
+#main-menu {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    background:
+        radial-gradient(130% 85% at 50% 0%, rgba(200,215,240,.14), transparent 62%),
+        linear-gradient(160deg, #4a5c72 0%, #2b3149 55%, #191d2d 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    text-align: center;
+    padding: 24px;
+}
+
+#main-menu h1 {
+    font-family: "SimSun", "宋体", "Songti SC", "STSong", Georgia, serif;
+    font-size: 46px;
+    letter-spacing: 14px;
+    font-weight: 200;
+    text-indent: 14px;
+    color: #f4f6fa;
+}
+
+/* 标题下方细线装饰 */
+.title-rule {
+    width: 140px;
+    height: 1px;
+    margin: 20px 0 16px;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255,255,255,.65),
+        transparent);
+}
+
+#main-menu p {
+    color: #aeb7c6;
+    letter-spacing: 6px;
+    font-size: 13px;
+    text-indent: 6px;
+}
+
+/* 菜单按钮组 */
+.main-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 48px;
+}
+
+.main-menu-btn {
+    width: 260px;
+    padding: 14px 0;
+    background: transparent;
+    color: #e4e9f1;
+    border: 1px solid rgba(255,255,255,.26);
+    font-size: 14px;
+    letter-spacing: 10px;
+    text-indent: 10px;
+    font-weight: 300;
+    transition: .35s ease;
+}
+
+.main-menu-btn:hover {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.75);
+    color: #ffffff;
+    letter-spacing: 14px;
+    text-indent: 14px;
+}
+
+.main-menu-tip {
+    margin-top: 18px;
+    font-size: 11px;
+    color: #9fb6d8;
+    letter-spacing: 3px;
+    text-shadow: 0 2px 6px rgba(5,15,40,.6);
+}
+
+/* 结局界面插图 */
+#ending-img {
+    height: 40vh;
+    max-width: 78%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 22px rgba(0,0,0,.45));
+    margin-bottom: 18px;
+}
+
+/* 通用子界面 */
+.sub-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 16;
+    background: rgba(13,16,28,.97);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.back-btn {
+    margin-top: 8px;
+    padding: 10px 38px;
+    background: transparent;
+    color: #c6ced9;
+    border: 1px solid rgba(255,255,255,.5);
+    font-size: 14px;
+    letter-spacing: 3px;
+    transition: .3s;
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,.12);
+    color: white;
+}
+
+.sub-title {
+    font-size: 26px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
+.sub-hint {
+    font-size: 12px;
+    color: #9aa4b5;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+/* 存档 */
+#save-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+}
+
+.slot {
+    width: min(560px, 92%);
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 5px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.slot-info { flex: 1; min-width: 0; }
+
+.slot-name { font-size: 15px; letter-spacing: 2px; }
+
+.slot-detail {
+    font-size: 12px;
+    color: #aab5c7;
+    margin-top: 5px;
+}
+
+.slot-btns { display: flex; gap: 8px; }
+
+.slot-btns button {
+    padding: 7px 14px;
+    font-size: 13px;
+    color: white;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.35);
+    transition: .25s;
+}
+
+.slot-btns button:hover:not(:disabled) {
+    background: rgba(125,150,190,.85);
+}
+
+.slot-btns button:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+/* 鉴赏 */
+#gallery-viewer {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+/* 鉴赏：放大 200% 的可拖动舞台 */
+#gallery-stage {
+    position: relative;
+    width: min(62vw, 460px);
+    height: 62vh;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 6px;
+    background:
+        radial-gradient(70% 60% at 50% 40%, rgba(160,190,240,.10), transparent 70%),
+        rgba(255,255,255,.03);
+    cursor: grab;
+    touch-action: none;
+}
+
+#gallery-stage.dragging { cursor: grabbing; }
+
+#gallery-figure {
+    position: absolute;
+    transform-origin: 50% 50%;
+    transition: transform .45s cubic-bezier(.22,.9,.28,1);
+    will-change: transform;
+}
+
+#gallery-figure.no-anim { transition: none; }
+
+#gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* 触碰时的短暂表情切换层（微笑） */
+#gallery-expr {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity .35s ease;
+    pointer-events: none;
+}
+
+#gallery-expr.show { opacity: 1; }
+
+/* 台词气泡 */
+.gallery-bubble {
+    position: absolute;
+    z-index: 5;
+    width: max-content;          /* 宽度不受 left 影响，避免靠右时被压扁 */
+    max-width: 220px;
+    padding: 9px 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.96);
+    color: #243a63;
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 24px rgba(4,12,34,.45);
+    transform-origin: left bottom;
+    transform: translate(0, -100%) scale(.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .3s cubic-bezier(.2,1.5,.4,1);
+}
+
+.gallery-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -7px;
+    width: 0; height: 0;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: rgba(255,255,255,.96);
+    border-bottom: 0;
+}
+
+.gallery-bubble.show {
+    opacity: 1;
+    transform: translate(0, -100%) scale(1);
+}
+
+/* 爱心 / 星星粒子 */
+.gx-particle {
+    position: absolute;
+    z-index: 4;
+    font-size: 18px;
+    pointer-events: none;
+    animation: gxFloat 1.15s ease-out forwards;
+    text-shadow: 0 2px 8px rgba(5,15,45,.5);
+}
+
+@keyframes gxFloat {
+    0%   { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+    22%  { opacity: 1; transform: translate(-50%,-80%) scale(1.15); }
+    100% { opacity: 0; transform: translate(-50%,-190%) scale(.85); }
+}
+
+/* 触感整体反馈 */
+#gallery-stage.react-shake  #gallery-figure { animation: gxShake .5s ease; }
+#gallery-stage.react-jump   #gallery-figure { animation: gxJump .55s ease; }
+#gallery-stage.react-hug    #gallery-figure { animation: gxHug .6s ease; }
+
+@keyframes gxShake {
+    0%,100% { filter: none; }
+    30%  { filter: drop-shadow(0 0 12px rgba(255,180,210,.75)); }
+}
+@keyframes gxJump {
+    35%  { transform: var(--fig-tf) translateY(-16px) scale(1.01); }
+}
+@keyframes gxHug {
+    40%  { filter: drop-shadow(0 0 18px rgba(255,190,215,.8)) saturate(1.12); }
+}
+
+#gallery-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(10,20,45,.55);
+    color: #dCE6F8;
+    color: #dce6f8;
+    font-size: 11px;
+    letter-spacing: 2px;
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity .3s;
+}
+
+#gallery-fit {
+    position: absolute;
+    right: 44px;
+    top: 8px;
+    z-index: 6;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.4);
+    background: rgba(10,20,45,.5);
+    color: #e8eefb;
+    font-size: 15px;
+    line-height: 1;
+    transition: .25s;
+}
+
+#gallery-fit:hover,
+#gallery-fit.active {
+    background: rgba(255,255,255,.3);
+    border-color: #fff;
+}
+
+/* 调试：?parts=1 时显示部位锚点 */
+.part-dot {
+    position: absolute;
+    width: 14px; height: 14px;
+    margin: -7px 0 0 -7px;
+    border-radius: 50%;
+    background: rgba(255,80,140,.85);
+    border: 2px solid #fff;
+    opacity: 0;
+    z-index: 7;
+}
+
+body.dev-parts .part-dot { opacity: .9; }
+
+.gallery-nav {
+    padding: 12px 18px;
+    font-size: 20px;
+    color: white;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.35);
+    transition: .25s;
+    flex-shrink: 0;
+}
+
+.gallery-nav:hover {
+    background: rgba(125,150,190,.85);
+}
+
+#gallery-counter {
+    color: #aab5c7;
+    font-size: 13px;
+    letter-spacing: 3px;
+}
+
+#gallery-caption {
+    text-align: center;
+    font-size: 15px;
+    letter-spacing: 3px;
+    color: #e6eaf2;
+}
+
+#gallery-note {
+    text-align: center;
+    font-size: 12px;
+    color: #9aa4b5;
+    letter-spacing: 2px;
+}
+
+/* 关注我们 */
+#follow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+}
+
+.follow-item {
+    width: min(420px, 90%);
+    padding: 14px 20px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 5px;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: #d9dce6;
+    transition: .25s;
+}
+
+.follow-item:hover {
+    background: rgba(125,150,190,.35);
+}
+
+/* 调试工具条（仅 ?dev=1 时显示，用于直接查看/调整剧情画面） */
+#debug-bar {
+    position: absolute;
+    z-index: 90;
+    left: 50%;
+    bottom: 32%;
+    transform: translateX(-50%);
+    display: none;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(10,14,26,.9);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 94%;
+}
+
+#debug-bar button {
+    padding: 5px 10px;
+    font-size: 12px;
+    color: #dfe4ee;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.3);
+}
+
+#debug-bar button:hover {
+    background: rgba(125,150,190,.85);
+    color: #fff;
+}
+
+#toast {
+    position: absolute;
+    z-index: 99;
+    left: 50%;
+    top: 30px;
+    transform: translate(-50%, -30px);
+    padding: 10px 26px;
+    background: rgba(20,25,42,.92);
+    border: 1px solid rgba(255,255,255,.35);
+    color: #f2f2f5;
+    font-size: 14px;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .3s;
+}
+
+#toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media(max-width:700px) {
+    #main-menu h1,
+    #start-screen h1 {
+        font-size: 26px;
+        letter-spacing: 4px;
+        text-indent: 4px;
+        line-height: 1.35;
+    }
+
+    /* 开始界面：手机端菜单居中，照片墙退为背景装饰 */
+    .start-panel { width: 100%; max-width: 100%; }
+
+    #start-screen {
+        justify-content: center;
+        padding: 0 24px;
+    }
+
+    .start-photos { width: 100%; opacity: .95; }
+    .photo-card.st-doll    { top: 1%;  left: 2%;  width: 30%; }
+    .photo-card.st-zjk     { top: 4%;  left: 55%; width: 26%; }
+    .photo-card.st-plaid   { top: 12%; left: 20%; width: 30%; }
+    .photo-card.st-uniform { top: 40%; left: 60%; width: 36%; }
+    .photo-card.st-cry     { top: 40%; left: 6%;  width: 32%; }
+    .photo-card.st-orange  { top: 58%; left: 4%;  width: 34%; }
+    .photo-card.st-swing   { top: auto; bottom: 0%; left: 34%; width: 56%; }
+
+    .start-kicker { font-size: 10px; letter-spacing: 4px; }
+    .start-sub-rule { width: 210px; }
+    #start-screen p { font-size: 12px; letter-spacing: 4px; }
+    .start-nav { width: 100%; margin-top: 30px; }
+    .start-menu-btn { padding: 12px 16px; }
+    .start-menu-btn .en { width: 64px; }
+    .start-menu-btn .cn { font-size: 14px; }
+    .start-copy { margin-top: 22px; color: #cfe1f8; opacity: 1; text-shadow: 0 2px 6px rgba(5,15,40,.7); }
+
+    .main-menu-btn {
+        width: 220px;
+    }
+
+    #ending-img {
+        height: 24vh;
+    }
+
+    .title-rule {
+        width: 90px;
+    }
+
+    .main-nav {
+        margin-top: 34px;
+    }
+
+    /* 小屏：立绘放大，头顶略高于画面上沿 */
+    #character {
+        height: 155%;
+        width: 150%;
+        bottom: -64%;
+    }
+
+    .slot {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .slot-btns {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    #dialogue-box {
+        height: 32%;
+        padding: 18px;
+    }
+
+    #dialogue {
+        font-size: 14px;
+    }
+
+    /* 小屏背景：图仍铺满，暗角加深保证文字可读 */
+    #background::after {
+        background:
+            linear-gradient(transparent 30%, rgba(10,10,20,.75) 100%),
+            rgba(8,10,18,.24);
+    }
+
+    #choices {
+        width: 85%;
+    }
+
+    #gallery-viewer {
+        gap: 10px;
+    }
+
+    #gallery-viewer {
+        width: 100%;
+        gap: 10px;
+    }
+
+    #gallery-stage {
+        height: 44vh;
+        flex: 1;
+        min-width: 0;
+        width: auto;
+    }
+
+    .gallery-bubble { max-width: 180px; font-size: 12px; }
+}
+
+/* 矮屏 / 手机横屏：压缩立绘与对话框，避免挤成一团 */
+@media(max-height:520px) {
+    #character {
+        height: 192%;
+        width: 90%;
+        bottom: -103%;
+    }
+
+    #dialogue-box {
+        height: 34%;
+        padding: 14px 20px;
+    }
+
+    #speaker {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    #dialogue {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    #choices {
+        top: 45%;
+        width: 70%;
+        gap: 10px;
+    }
+
+    .choice-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+</style>
+<style id="__dm_no_drag_style__" data-page-node-id="tx5H3ghMrLmPgOGJaHhEQe">* { -webkit-user-drag: none !important; }</style><style id="__dm_bindable_badge_style__" data-page-node-id="4Gp79geAmBnKC40QPNiPBy">[data-sp-bindable="database"]{outline:1px dashed #0088ff;outline-offset:2px;border-radius:4px;}[data-sp-bindable="database"] *{pointer-events:none !important;transition:none !important;animation:none !important;}[data-sp-bindable="database"]{transition:none !important;animation:none !important;}</style></head>
+
+<body data-page-node-id="3y5pKYAvLK6YIlLJBDzz8h" style="position: relative;">
+
+<div id="game" data-page-node-id="EttmYvfUgdkWGUdL15VfsQ">
+
+    <!-- 开始界面（galgame 标题画面） -->
+    <div id="start-screen" class="layer-hide" data-page-node-id="lpxlO1B1IvnV4UKr9ZzAov">
+
+        <!-- 蓝色柔光与漂浮光点 -->
+        <div class="start-glow a"></div>
+        <div class="start-glow b"></div>
+        <div class="start-glow c"></div>
+        <div class="start-particles">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+
+        <!-- 右侧回忆照片墙（真实照片 + C位立绘） -->
+        <div class="start-photos">
+            <div class="photo-card st-doll" data-label="可爱的杯子"><img src="imagines/stickers/s2_doll_cut.png" alt="zjk"></div>
+            <div class="photo-card st-zjk" data-label="zjk"><img src="imagines/stickers/s0_zjk.png" alt="zjk"></div>
+            <div class="photo-card st-plaid" data-label="好萌啊"><img src="imagines/stickers/s3_plaid_cut.png" alt="zjk"></div>
+            <div class="photo-card st-uniform" data-label="合影 · 大家的笑脸"><img src="imagines/stickers/s4_nobg.png" alt="zjk"></div>
+            <div class="photo-card st-orange" data-label="宠物"><img src="imagines/stickers/s1_orange_cut.png" alt="zjk"></div>
+            <div class="photo-card st-swing" data-label="lets gooooooooo"><img src="imagines/stickers/s5_swing_cut.png" alt="zjk"></div>
+            <div class="photo-card st-cry" data-label="妈妈"><img src="imagines/stickers/s6_cry.png" alt="zjk"></div>
+        </div>
+
+        <!-- 标题 + 菜单 -->
+        <div class="start-panel">
+            <div class="start-kicker">♥ VISUAL NOVEL · 校园恋爱 ♥</div>
+            <h1 data-page-node-id="4swicwxzNfhRbC5WEQGACV">阿八日日进步中<span class="title-tilde">~</span></h1>
+            <div class="start-sub-rule"></div>
+            <p data-page-node-id="XW9VkQ5zr1jaVQN7IXLE55">汽修二班28号我要的轮胎呢？</p>
+
+            <nav class="start-nav">
+                <button class="start-menu-btn" onclick="openStory()" id="btn-story">
+                    <span class="en">START</span><span class="cn">开始游戏</span>
+                </button>
+                <button class="start-menu-btn" onclick="openSaveScreen()">
+                    <span class="en">LOAD</span><span class="cn">读取存档</span>
+                </button>
+                <button class="start-menu-btn" onclick="openGallery()">
+                    <span class="en">GALLERY</span><span class="cn">鉴赏模式</span>
+                </button>
+                <button class="start-menu-btn" onclick="openFollow()">
+                    <span class="en">FOLLOW</span><span class="cn">关注我们</span>
+                </button>
+            </nav>
+
+            <div class="main-menu-tip" id="main-menu-tip">按 Esc 可随时返回主界面</div>
+
+            <div class="start-copy">© 2906的杯子 · zjk</div>
+        </div>
+    </div>
+
+    <!-- 存档界面 -->
+    <div id="save-screen" class="sub-screen layer-hide" data-page-node-id="knDSnMj1Cp6ICjPEHydY8u">
+        <h2 class="sub-title" data-page-node-id="HBnoFFHgU0MceNSDOqKCWW">存 档</h2>
+        <div id="save-slots" data-page-node-id="oJS7jmx44u3rN71bVRmV68"></div>
+        <div class="sub-hint" data-page-node-id="ytsDsgTEfEuAwrORJvQvay">剧情进行中可在右上角「存档」随时保存进度</div>
+        <button class="back-btn" onclick="backToMainMenu()" data-page-node-id="a9lsepuV4Yu2ua1uRIwj5Y">返回主界面</button>
+    </div>
+
+    <!-- 鉴赏模式 -->
+    <div id="gallery-screen" class="sub-screen layer-hide" data-page-node-id="WANuSpq7s7NaKOM4DgbBNB">
+        <h2 class="sub-title" data-page-node-id="wF7ERpx3vchoxMYYuQBwKl">鉴赏模式</h2>
+        <div id="gallery-viewer" data-page-node-id="WG7Db1wR7eaPZwp9XtX7qy">
+            <button class="gallery-nav" id="gallery-prev" onclick="prevImage()" data-page-node-id="EaGwEMdLhPW1FTAxYsiF17">◀</button>
+            <div id="gallery-stage">
+                <div id="gallery-figure">
+                    <img id="gallery-img" src="" alt="CG" data-page-node-id="1GSDsNxadfWJxdVBDHVLlQ">
+                    <img id="gallery-expr" src="" alt="">
+                </div>
+                <div class="gallery-bubble" id="gallery-bubble"></div>
+                <button id="gallery-fit" type="button" onclick="toggleGalleryFit()" title="完整视图 / 放大 200%">⤢</button>
+                <button id="gallery-reset" type="button" onclick="resetGalleryView()" title="复位视角">⤾</button>
+                <div id="gallery-hint">拖动查看 · 点点他有反应</div>
+            </div>
+            <button class="gallery-nav" id="gallery-next" onclick="nextImage()" data-page-node-id="cy3qDQ768PPk9CinJmzl12">▶</button>
+        </div>
+        <div id="gallery-caption" data-page-node-id="iiJdjLoauRLmdNGCGd3SgP">—</div>
+        <div id="gallery-note" data-page-node-id="ZHKrUTdrubZRmpiT1fJLxe">—</div>
+        <div id="gallery-counter" data-page-node-id="VYE43HW3EQn5qrYWOQYYxY">1 / 3</div>
+        <button class="back-btn" onclick="backToMainMenu()" data-page-node-id="As0bZADpzh4iJSg3mpiF74">返回主界面</button>
+    </div>
+
+    <!-- 关注我们 -->
+    <div id="follow-screen" class="sub-screen layer-hide" data-page-node-id="ZXk4x5zJtQxnXjrzgfDO49">
+        <h2 class="sub-title" data-page-node-id="BQdkvnA27xer2BzCua9vPq">关注我们</h2>
+        <div id="follow-list" data-page-node-id="cxW2wQKfMvLnowbZVEO9i6">
+            <div class="follow-item" data-page-node-id="wfJb3MrAT9tyFViN3cvA1k">wx：@fmin_Xiyyyyyyue0v0</div>
+            <div class="follow-item" data-page-node-id="ylAJHvxm7EzOQm4aHeD4BZ">哔哩哔哩：今日豪</div>
+            <div class="follow-item" data-page-node-id="talHbPy7TOe36qAsyFXZyq">微信公众号：阿八日日进步中~</div>
+            <div class="follow-item" data-page-node-id="JaqkurC1gG1zx2oLHWAy0D">官方QQ群：3340599188</div>
+        </div>
+        <div class="sub-hint" data-page-node-id="XXX4wEwaeCRdv6CWxY27qZ">很高兴遇见你，雨停之后也请多指教 ☂</div>
+        <button class="back-btn" onclick="backToMainMenu()" data-page-node-id="XRuPvAO8wWN4eWGjrKiDrA">返回主界面</button>
+    </div>
+
+    <!-- ===== 剧情层 ===== -->
+    <div id="game-layer" class="" data-page-node-id="6NtKxgJHTk8CX82Et9F3Qy">
+
+        <!-- 游戏背景 -->
+        <div id="background" data-page-node-id="qK2FjbTUlpnN32uKkFrVLt">
+            <div id="bg-image"></div>
+        </div>
+
+        <!-- zjk 立绘 -->
+        <div id="character" data-page-node-id="qqbtCW0OmG22MOkhbDknjC">
+            <div id="character-placeholder" data-page-node-id="k7oGCqLnPPWcgqdeyQz5jg" style="display: none;">☂</div>
+            <img id="character-img" src="imagines/zjk.png" style="display: block;" alt="zjk" onerror="this.style.display='none';document.getElementById('character-placeholder').style.display='block'" data-page-node-id="XWRRlKxZwAK6MKvv0Vuirs">
+        </div>
+
+        <!-- 好感度 -->
+        <div id="affection-panel" data-page-node-id="0wzOa8wEhU5Pn6scJomKtO">
+            <div data-page-node-id="5VP9lGe1EDzNNq2iXzgSXm">♥ zjk 好感度：<span id="affection" data-page-node-id="PbfPD1OFFofmPeA6dkBLZe">0</span></div>
+            <div id="affection-bar" data-page-node-id="C4EcKSseJ0fjOJ3O4puNc8">
+                <div id="affection-fill" data-page-node-id="PHZxEcRRDBfPp5dEPDmsJv" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- 功能菜单 -->
+        <div id="menu" data-page-node-id="nnZjObjzJ5pOVCtbunw0RP">
+            <button class="menu-btn" onclick="openSaveScreen()" data-page-node-id="qTNdJv7ys9wFhztHAscIOA">存档</button>
+            <button class="menu-btn" onclick="openGallery()" data-page-node-id="UouRvh5CUiaB81X5WGNI3E">鉴赏</button>
+            <button class="menu-btn" onclick="backToMainMenu()" data-page-node-id="Qtef2wVss1AnAJNnAH2W96">主界面</button>
+        </div>
+
+        <!-- 选项 -->
+        <div id="choices" data-page-node-id="SzzlvXHQupSG5Csww9tYwP" style="display: none;"></div>
+
+        <!-- 对话框 -->
+        <div id="dialogue-box" onclick="nextDialogue()" data-page-node-id="71sqfrjrOjGBmlgX1rehr7">
+            <div id="speaker" data-page-node-id="LO3pMpdvR4tkpfrJifcFMG">旁白</div>
+            <div id="dialogue" data-page-node-id="eNjVmnhFv5O3m7lfzUtzev">傍晚六点，雨下得很大。</div>
+            <div id="next-tip" data-page-node-id="Bdlh2XBmQfnp4XwV84xrRO">点击继续 ▼</div>
+        </div>
+
+    </div>
+
+    <!-- 结局界面 -->
+    <div id="ending-screen" data-page-node-id="0jbyHwjoeCSxHUQZAGqGfX" style="display: none;">
+        <img id="ending-img" src="imagines/zjk.png" alt="zjk" data-page-node-id="jj4GB3Zq7xb629AwBkMW8b">
+        <h1 id="ending-title" data-page-node-id="EfFJasARFcvDwdqH7EEcYe">END</h1>
+        <p id="ending-text" data-page-node-id="4gCiPlqU62FgbPHqksrT1C"></p>
+        <button class="start-btn" onclick="restartGame()" data-page-node-id="erwIb9Vrq6gJsi48N53m4K">重新开始</button>
+        <button class="start-btn" style="margin-top:14px" onclick="backToMainMenu()" data-page-node-id="ZVYV1eIlDvPhQrXoKDw29o">返回主界面</button>
+    </div>
+
+    <!-- 调试工具条 -->
+    <div id="debug-bar" data-page-node-id="y7JqXSKjqKmQh122dDEEd3"></div>
+
+    <!-- 轻提示 -->
+    <div id="toast" data-page-node-id="9Xz07uOa9l5aJABO9o6EUO"></div>
+
+</div>
+
+<!-- BGM 背景音乐 -->
+<audio id="bgm" src="audio/bgm.mp3" loop preload="auto"></audio>
+<button id="bgm-toggle" title="关闭音乐" aria-label="音乐开关">♪</button>
+
+<!-- 游戏脚本（按界面拆分，方便单独编辑；顺序不要动） -->
+<script src="core.js" data-page-node-id="oyeqdGqC1iia8KV9Jc0qYT"></script>     <!-- 基础工具：提示、界面层显隐、背景 -->
+<script src="story.js" data-page-node-id="0uRGN27GczaRpy7REZIAV4"></script>    <!-- zjk 角色资料 + 全部剧情数据、台词、选项、好感度 -->
+<script src="gallery.js" data-page-node-id="8FacBGZ47x3tA8A58xCHiA"></script>  <!-- 鉴赏模式：CG 图鉴与解锁 -->
+<script src="save.js" data-page-node-id="ftTvsgBBERZsttNFQ06yLa"></script>     <!-- 存档界面：3 个存档槽 -->
+<script src="engine.js" data-page-node-id="ob6Epy6MR6GAcNCSa9QOEr"></script>   <!-- 剧情引擎：立绘表情、打字机、选项、结局 -->
+<script src="ui.js" data-page-node-id="nNYj3FPFZfjvMuQVXzRss3"></script>       <!-- 主界面、关注我们、返回主界面 -->
+<script src="main.js" data-page-node-id="jC08oHJW6peH2k3QAB0y7w"></script>     <!-- 入口：键盘、调试入口(?dev=1)、初始化 -->
+
+
+
+
+</body></html>

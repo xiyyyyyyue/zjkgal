@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>剧情画面调参器 · 阿八日日进步中~</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    background: #f4f5f8;
+    color: #1f2430;
+    font-family: "Microsoft YaHei", sans-serif;
+    padding: 24px;
+}
+
+header { max-width: 1240px; margin: 0 auto 18px; }
+
+h1 { font-size: 20px; font-weight: 600; letter-spacing: 2px; }
+
+header p { margin-top: 6px; font-size: 12px; color: #6b7280; letter-spacing: 1px; }
+
+.layout {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid #e3e6ec;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+.panel h2 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #374151;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eef0f4;
+}
+
+.row { margin-bottom: 14px; }
+
+.row label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #4b5563;
+    margin-bottom: 6px;
+}
+
+.row label b { color: #2563eb; font-weight: 600; }
+
+input[type=range] { width: 100%; accent-color: #2563eb; }
+
+select, button {
+    font-family: inherit;
+    font-size: 12px;
+}
+
+select {
+    width: 100%;
+    padding: 7px 8px;
+    border: 1px solid #d5d9e0;
+    border-radius: 5px;
+    background: #fff;
+    color: #1f2430;
+    margin-bottom: 4px;
+}
+
+.presets { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.presets button {
+    padding: 7px 12px;
+    border: 1px solid #d5d9e0;
+    background: #fafbfc;
+    border-radius: 5px;
+    color: #374151;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.presets button:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+/* 预览舞台 */
+.stage-wrap { position: relative; }
+
+#stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #46536b, #1d2233);
+    background-size: cover;
+    background-position: center;
+}
+
+#stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 35%, rgba(10,10,20,.65) 100%);
+    pointer-events: none;
+}
+
+#pv-char {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 1;
+}
+
+#pv-char img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 15px rgba(0,0,0,.2));
+}
+
+#pv-box {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    background: rgba(15,19,32,.88);
+    border: 1px solid rgba(255,255,255,.25);
+    padding: 22px 28px;
+    border-radius: 5px;
+    color: #f2f2f5;
+}
+
+#pv-speaker {
+    font-size: 18px;
+    color: #c5d9f0;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+#pv-text { line-height: 2; }
+
+#pv-affection {
+    position: absolute;
+    top: 22px;
+    left: 22px;
+    z-index: 4;
+    font-size: 13px;
+    color: #f2d8e1;
+}
+
+#pv-affbar {
+    margin-top: 6px;
+    width: 130px;
+    height: 4px;
+    background: rgba(255,255,255,.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#pv-afffill { height: 100%; width: 35%; background: #e8a4ba; }
+
+#pv-menu {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    z-index: 4;
+    display: flex;
+    gap: 6px;
+}
+
+#pv-menu span {
+    padding: 5px 10px;
+    font-size: 11px;
+    color: #fff;
+    background: rgba(20,25,40,.6);
+    border: 1px solid rgba(255,255,255,.35);
+}
+
+/* 输出 */
+#css-out {
+    width: 100%;
+    height: 190px;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 12px;
+    border: 1px solid #d5d9e0;
+    border-radius: 6px;
+    background: #fbfcfd;
+    color: #1f2430;
+    resize: vertical;
+}
+
+.actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+.actions button {
+    padding: 9px 16px;
+    border-radius: 5px;
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.actions button.secondary {
+    background: #fff;
+    color: #2563eb;
+}
+
+.actions button:hover { opacity: .85; }
+
+#copied {
+    font-size: 12px;
+    color: #16a34a;
+    margin-top: 8px;
+    display: none;
+}
+
+@media(max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>剧情画面调参器</h1>
+    <p>拖动滑块实时预览，满意后点「复制 CSS」发给我，我写回 index.html</p>
+</header>
+
+<div class="layout">
+
+    <!-- 控制面板 -->
+    <div>
+        <div class="panel">
+            <h2>立绘（zjk）</h2>
+            <div class="row">
+                <label>高度 <b id="v-charH">177%</b></label>
+                <input type="range" id="charH" min="40" max="320" value="177">
+            </div>
+            <div class="row">
+                <label>宽度 <b id="v-charW">192%</b></label>
+                <input type="range" id="charW" min="30" max="250" value="192">
+            </div>
+            <div class="row">
+                <label>距底部 <b id="v-charB">-84%</b></label>
+                <input type="range" id="charB" min="-220" max="45" value="-84">
+            </div>
+            <div class="row">
+                <label>立绘素材</label>
+                <select id="charSrc">
+                    <option value="imagines/zjk.png">常态 zjk.png</option>
+                    <option value="imagines/zjk_smile.png">笑容 zjk_smile.png</option>
+                    <option value="imagines/zjk222.png">zjk222.png</option>
+                    <option value="imagines/zjk333.png">zjk333.png</option>
+                </select>
+            </div>
+            <div class="row">
+                <label>背景</label>
+                <select id="bgSel">
+                    <option value="linear-gradient(135deg, #46536b, #1d2233)">默认夜色街道</option>
+                    <option value="linear-gradient(135deg, #3d4c63, #1a1f2e)">雨天便利店</option>
+                    <option value="linear-gradient(135deg, #5a6b86, #232a3c)">路灯下</option>
+                    <option value="linear-gradient(135deg, #2b3446, #141822)">暗调疏离</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>对话框</h2>
+            <div class="row">
+                <label>距底部 <b id="v-boxB">2.5%</b></label>
+                <input type="range" id="boxB" min="0" max="15" step="0.5" value="2.5">
+            </div>
+            <div class="row">
+                <label>高度 <b id="v-boxH">25%</b></label>
+                <input type="range" id="boxH" min="16" max="45" value="25">
+            </div>
+            <div class="row">
+                <label>宽度 <b id="v-boxW">90%</b></label>
+                <input type="range" id="boxW" min="70" max="96" value="90">
+            </div>
+            <div class="row">
+                <label>不透明度 <b id="v-boxO">0.88</b></label>
+                <input type="range" id="boxO" min="0.5" max="1" step="0.01" value="0.88">
+            </div>
+            <div class="row">
+                <label>正文字号 <b id="v-font">17px</b></label>
+                <input type="range" id="font" min="13" max="24" value="17">
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>预设</h2>
+            <div class="presets">
+                <button onclick="applyPreset('default')">当前线上版</button>
+                <button onclick="applyPreset('big')">超大立绘</button>
+                <button onclick="applyPreset('compact')">紧凑对话框</button>
+                <button onclick="applyPreset('cinema')">电影感</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预览 + 输出 -->
+    <div>
+        <div class="panel stage-wrap">
+            <h2>实时预览（16:9）</h2>
+            <div id="stage">
+                <div id="pv-char"><img id="pv-img" src="imagines/zjk.png" alt="zjk"></div>
+                <div id="pv-affection">
+                    <div>♥ zjk 好感度：35</div>
+                    <div id="pv-affbar"><div id="pv-afffill"></div></div>
+                </div>
+                <div id="pv-menu"><span>存档</span><span>鉴赏</span><span>主界面</span></div>
+                <div id="pv-box">
+                    <div id="pv-speaker">zjk</div>
+                    <div id="pv-text">「走吧，我送你。」雨声里，他的声音比记忆中更低了一些。</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>生成的 CSS</h2>
+            <textarea id="css-out" readonly></textarea>
+            <div class="actions">
+                <button onclick="copyCss()">复制 CSS</button>
+                <button class="secondary" onclick="copySummary()">复制参数摘要</button>
+            </div>
+            <div id="copied">已复制到剪贴板 ✓</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const controls = ["charH", "charW", "charB", "boxB", "boxH", "boxW", "boxO", "font"];
+
+const presets = {
+    "default": { charH: 177, charW: 192, charB: -84, boxB: 2.5, boxH: 25, boxW: 90, boxO: 0.88, font: 17 },
+    "big":     { charH: 200, charW: 200, charB: -107, boxB: 2,  boxH: 23, boxW: 92, boxO: 0.85, font: 17 },
+    "compact": { charH: 88,  charW: 58,  charB: 14,  boxB: 3,   boxH: 20, boxW: 88, boxO: 0.9,  font: 16 },
+    "cinema":  { charH: 84,  charW: 54,  charB: 17,  boxB: 4,   boxH: 18, boxW: 84, boxO: 0.72, font: 18 }
+};
+
+function values() {
+    return {
+        charH: +$("charH").value,
+        charW: +$("charW").value,
+        charB: +$("charB").value,
+        boxB:  +$("boxB").value,
+        boxH:  +$("boxH").value,
+        boxW:  +$("boxW").value,
+        boxO:  +$("boxO").value,
+        font:  +$("font").value
+    };
+}
+
+function applyPreset(name) {
+    const p = presets[name];
+    if (!p) return;
+    controls.forEach(k => { $(k).value = p[k]; });
+    render();
+}
+
+function render() {
+    const v = values();
+
+    $("v-charH").innerText = v.charH + "%";
+    $("v-charW").innerText = v.charW + "%";
+    $("v-charB").innerText = v.charB + "%";
+    $("v-boxB").innerText = v.boxB + "%";
+    $("v-boxH").innerText = v.boxH + "%";
+    $("v-boxW").innerText = v.boxW + "%";
+    $("v-boxO").innerText = v.boxO.toFixed(2);
+    $("v-font").innerText = v.font + "px";
+
+    const char = $("pv-char");
+    char.style.height = v.charH + "%";
+    char.style.width = v.charW + "%";
+    char.style.bottom = v.charB + "%";
+
+    const box = $("pv-box");
+    box.style.bottom = v.boxB + "%";
+    box.style.height = v.boxH + "%";
+    box.style.width = v.boxW + "%";
+    box.style.background = "rgba(15,19,32," + v.boxO + ")";
+
+    $("pv-text").style.fontSize = v.font + "px";
+
+    $("stage").style.background = $("bgSel").value;
+    $("pv-img").src = $("charSrc").value;
+
+    $("css-out").value = buildCss(v);
+}
+
+function buildCss(v) {
+    return [
+        "/* ===== 剧情画面参数（由调参器生成） ===== */",
+        "",
+        "#character {",
+        "    height: " + v.charH + "%;",
+        "    width: " + v.charW + "%;",
+        "    bottom: " + v.charB + "%;",
+        "}",
+        "",
+        "#dialogue-box {",
+        "    bottom: " + v.boxB + "%;",
+        "    height: " + v.boxH + "%;",
+        "    width: " + v.boxW + "%;",
+        "    background: rgba(15,19,32," + v.boxO + ");",
+        "}",
+        "",
+        "#dialogue {",
+        "    font-size: " + v.font + "px;",
+        "}"
+    ].join("\n");
+}
+
+function summary() {
+    const v = values();
+    return "立绘：高 " + v.charH + "% / 宽 " + v.charW + "% / 距底 " + v.charB + "%；"
+         + "对话框：距底 " + v.boxB + "% / 高 " + v.boxH + "% / 宽 " + v.boxW + "% / 不透明度 " + v.boxO.toFixed(2)
+         + "；正文 " + v.font + "px；立绘素材 " + $("charSrc").value;
+}
+
+function copyText(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand("copy");
+    } catch {}
+    document.body.removeChild(ta);
+
+    const tip = $("copied");
+    tip.style.display = "block";
+    setTimeout(() => { tip.style.display = "none"; }, 1600);
+}
+
+function copyCss() { copyText($("css-out").value); }
+function copySummary() { copyText(summary()); }
+
+controls.forEach(id => { $(id).addEventListener("input", render); });
+$("bgSel").addEventListener("change", render);
+$("charSrc").addEventListener("change", render);
+
+render();
+</script>
+
+</body>
+</html>
